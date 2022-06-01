@@ -23,12 +23,11 @@ namespace api.Extensions
         }
         public static WebApplicationBuilder AddCorsServices(this WebApplicationBuilder builder)
         {
-            builder.Services.AddCors(c =>
-           {
-               c.AddPolicy("AllowSpecificOrigin",
-               options => options.AllowAnyHeader().AllowAnyMethod().
-               WithOrigins("http://localhost:3000"));
-           });
+            builder.Services.AddCors(p => p.AddPolicy("allowReactApp", builder =>
+            {
+                builder.WithOrigins("http://localhost:3000").AllowAnyMethod().AllowAnyHeader();
+            }));
+
             return builder;
         }
     }

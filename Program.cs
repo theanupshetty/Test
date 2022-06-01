@@ -9,8 +9,9 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
 builder.AddApplicationServices();
-builder.AddCorsServices();
 builder.AddDependencies();
+builder.AddCorsServices();
+
 
 var app = builder.Build();
 
@@ -21,8 +22,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
-app.UseCors("AllowSpecificOrigin");
+app.UseCors("allowReactApp");
+//app.UseHttpsRedirection();
+
 
 app.UseAuthorization();
 
