@@ -3,11 +3,43 @@ import axios from "axios";
 
 class Upload extends Component {
   render() {
-    const submitHandler = (e) => {
+    const toBase64 = (file) =>
+      new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => {
+          let encoded = reader.result.toString().replace(/^data:(.*,)?/, "");
+          if (encoded.length % 4 > 0) {
+            encoded += "=".repeat(4 - (encoded.length % 4));
+          }
+          resolve(encoded);
+        };
+        reader.onerror = (error) => reject(error);
+      });
+
+    const submitHandler = async (e) => {
       e.preventDefault();
       const FirstName = e.target.firstName.value;
-      const LastName = e.target.lastName.value;
-      const obj = { FirstName, LastName };
+      const lastName = e.target.lastName.value;
+      const email = e.target.email.value;
+      const phone = e.target.phone.value;
+      const gitProfile = e.target.gitProfile.value;
+      const aboutYou = e.target.about.value;
+      const CVFile = await toBase64(e.target.cv.files[0]);
+      const coverLetter = await toBase64(e.target.coverLetter.files[0]);
+      const liveInUs = e.target.liveinus.value === "on" ? true : false;
+
+      const obj = {
+        FirstName,
+        lastName,
+        email,
+        phone,
+        liveInUs,
+        gitProfile,
+        CVFile,
+        coverLetter,
+        aboutYou,
+      };
       axios
         .post("http://localhost:5290/api/uploadcv", {
           obj,
@@ -35,6 +67,7 @@ class Upload extends Component {
                 className="form-control"
                 id="firstName"
                 placeholder=""
+                required
               />
             </div>
 
@@ -45,6 +78,7 @@ class Upload extends Component {
                 className="form-control"
                 id="lastName"
                 placeholder=""
+                required
               />
             </div>
           </div>
@@ -55,6 +89,8 @@ class Upload extends Component {
               className="form-control"
               id="email"
               placeholder=""
+              required
+              email
             />
           </div>
           <div className="row">
@@ -65,6 +101,9 @@ class Upload extends Component {
                 className="form-control"
                 id="phone"
                 placeholder=""
+                required
+                phone
+                minLength={10}
               />
             </div>
             <div className="col-md-6 mb-2">
@@ -74,6 +113,7 @@ class Upload extends Component {
                 className="form-control"
                 id="gitProfile"
                 placeholder=""
+                required
               />
             </div>
           </div>
@@ -84,6 +124,7 @@ class Upload extends Component {
               className="form-control"
               id="about"
               placeholder=""
+              required
             />
           </div>
 
@@ -98,7 +139,12 @@ class Upload extends Component {
               <label for="formFile" className="form-label">
                 Upload Cover Letter
               </label>
-              <input className="form-control" type="file" id="coverLetter" />
+              <input
+                className="form-control"
+                type="file"
+                id="coverLetter"
+                required
+              />
             </div>
           </div>
           <div className="form-check form-switch mb-2">
@@ -107,6 +153,7 @@ class Upload extends Component {
               type="checkbox"
               role="switch"
               id="liveinus"
+              required
             />
 
             <label className="form-check-label mb-2" for="liveinus">
@@ -115,6 +162,7 @@ class Upload extends Component {
             <div className="border-top my-3"></div>
           </div>
           <input type="submit" className="btn btn-primary"></input>
+          <span className="" id="spnSuccess"></span>
         </form>
       </div>
     );
